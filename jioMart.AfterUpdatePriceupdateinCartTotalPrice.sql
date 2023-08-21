@@ -16,13 +16,12 @@ BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
-	declare @productDetailsId int;
-	select @productDetailsId=ProductDetailsId from ProductDetails;
-	--update Cartdetails table>>carttotalprice
-    update CD set CD.CartTotalPrice = (CD.ProductQuantity * PD.ProductPrice)
-	from JioMart.CartDetails as CD
-	inner join JioMart.ProductDetails as PD on PD.ProductDetailsId=CD.ProductDetailsId
-	where PD.ProductDetailsId=@productDetailsId
+	UPDATE cd
+    SET CartTotalPrice = i.ProductPrice * cd.ProductQuantity
+    FROM JioMart.CartDetails cd
+    INNER JOIN inserted i ON cd.ProductDetailsId = i.ProductDetailsId
+    INNER JOIN deleted d ON cd.ProductDetailsId = d.ProductDetailsId
+    WHERE i.ProductPrice <> d.ProductPrice
 
 END
 GO
